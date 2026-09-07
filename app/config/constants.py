@@ -1,0 +1,18 @@
+STEPS = {
+    0: "Wash Hands",
+    1: "Wear Gloves",
+    2: "Apply Tourniquet",
+    3: "Take Cotton",
+    4: "Dip Cotton in Spirit",
+    5: "Clean Area",
+    6: "Dispose Cotton",
+    7: "Take Cannula",
+    8: "Insert Cannula",
+    9: "Remove Tourniquet",
+    10: "Take Blood Collection Tube",
+    11: "Insert Tube",
+    12: "Blood Collection",
+    13: "Remove Tube",
+    14: "Remove Cannula",
+    15: "Dispose Cannula",
+}
