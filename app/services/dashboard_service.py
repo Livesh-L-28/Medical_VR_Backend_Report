@@ -191,10 +191,30 @@ def get_dashboard(user_id: int, db: Session):
 
     progress_data = []
 
+    sess_ids = [item.session_id for item in progress]
+    sessions_map = {}
+    test_reps = {}
+    train_reps = {}
+    if sess_ids:
+        sess_objs = db.query(TrainingSession).filter(TrainingSession.id.in_(sess_ids)).all()
+        sessions_map = {s.id: s.session_type for s in sess_objs}
+        test_objs = db.query(TestReport).filter(TestReport.session_id.in_(sess_ids)).all()
+        test_reps = {tr.session_id: tr.result for tr in test_objs}
+        train_objs = db.query(TrainingReport).filter(TrainingReport.session_id.in_(sess_ids)).all()
+        train_reps = {tr.session_id: tr.overall_result for tr in train_objs}
+
     for item in progress:
+        s_type = sessions_map.get(item.session_id, "TRAINING")
+        if s_type == "TEST":
+            res_stat = test_reps.get(item.session_id, "NOT_ASSESSED")
+        else:
+            res_stat = train_reps.get(item.session_id, "COMPLETED" if item.completed_steps == 16 else "NEEDS_PRACTICE")
+
         progress_data.append({
             "session_id": item.session_id,
             "session_number": item.session_number,
+            "session_type": s_type,
+            "result_or_status": res_stat,
             "accuracy": item.accuracy,
             "total_mistakes": item.total_mistakes,
             "total_attempts": item.total_attempts,

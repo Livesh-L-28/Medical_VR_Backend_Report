@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Virtualenv
+.venv/
+env/
+venv/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local Database & Artifacts
+*.db
+medical_vr.db
+sample_*.pdf
+*.pdf
+
+# Environment configs & secrets
+.env
+
+# OS-specific
+.DS_Store
+Thumbs.db

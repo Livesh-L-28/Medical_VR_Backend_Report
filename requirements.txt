@@ -3,4 +3,13 @@ uvicorn
 sqlalchemy
 psycopg2-binary
 pydantic-settings
+email-validator
 python-dotenv
+bcrypt
+python-jose[cryptography]
+python-multipart
+httpx
+reportlab
+pytest
+pytest-asyncio
+pypdf

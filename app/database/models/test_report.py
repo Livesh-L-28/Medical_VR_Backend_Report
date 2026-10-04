@@ -5,6 +5,7 @@ from app.database.database import Base
 
 
 class TestReport(Base):
+    __test__ = False
     __tablename__ = "test_reports"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -11,8 +11,13 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
-    class Config:
-        env_file = ".env"
+    # External Medical LLM Configuration
+    MEDICAL_LLM_URL: str = "http://127.0.0.1:8000"
+    MEDICAL_LLM_ENDPOINT: str = "/ask"
+    MEDICAL_LLM_MODEL: str = "openbiollm"
+    MEDICAL_LLM_TIMEOUT: int = 30
+
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
 settings = Settings()

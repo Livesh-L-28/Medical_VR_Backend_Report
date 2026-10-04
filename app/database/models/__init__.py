@@ -9,3 +9,4 @@ from .training_report import TrainingReport
 from .cumulative_weak_area import CumulativeWeakArea
 from .test_report import TestReport
 from app.database.models.guidance_step import GuidanceStep
+from .ai_feedback import AIReportFeedback

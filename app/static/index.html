@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical VR Clinical Simulation Console — Temporary Testing Interface</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0B1120;
+      --bg-surface: #131E36;
+      --bg-surface-elevated: #1E293B;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-light: rgba(255, 255, 255, 0.16);
+      --primary: #0EA5E9;
+      --primary-hover: #0284C7;
+      --primary-glow: rgba(14, 165, 233, 0.25);
+      --success: #10B981;
+      --success-glow: rgba(16, 185, 129, 0.2);
+      --danger: #EF4444;
+      --danger-glow: rgba(239, 68, 68, 0.2);
+      --warning: #F59E0B;
+      --warning-glow: rgba(245, 158, 11, 0.2);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Header */
+    header {
+      background: rgba(19, 30, 54, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #0EA5E9 0%, #3B82F6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      background: rgba(14, 165, 233, 0.15);
+      border: 1px solid rgba(14, 165, 233, 0.35);
+      color: #38BDF8;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+
+    .header-user-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34D399;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    .user-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Container */
+    .app-container {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Tab Bar */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.4;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--primary-hover);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.85);
+      color: #FFFFFF;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: var(--danger);
+      box-shadow: 0 0 12px var(--danger-glow);
+    }
+    .btn-success {
+      background: rgba(16, 185, 129, 0.85);
+      color: #FFFFFF;
+    }
+    .btn-success:hover:not(:disabled) {
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success-glow);
+    }
+    .btn-warning {
+      background: rgba(245, 158, 11, 0.85);
+      color: #0B1120;
+    }
+    .btn-warning:hover:not(:disabled) {
+      background: var(--warning);
+      box-shadow: 0 0 12px var(--warning-glow);
+    }
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+    }
+
+    /* Auth Box */
+    .auth-banner {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .auth-form {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .input-text {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-family: inherit;
+    }
+    .input-text:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Simulator Live Telemetry Bar */
+    .sim-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      background: var(--bg-surface-elevated);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.25rem;
+    }
+    .sim-stat { display: flex; flex-direction: column; gap: 3px; }
+    .sim-stat-label { font-size: 0.68rem; text-transform: uppercase; color: var(--text-dim); font-weight: 600; letter-spacing: 0.03em; }
+    .sim-stat-val { font-size: 1.05rem; font-weight: 700; font-family: var(--font-mono); color: #38BDF8; }
+
+    /* Session Controls Strip */
+    .session-controls-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(19, 30, 54, 0.6);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Badges */
+    .badge-formative {
+      background: rgba(14, 165, 233, 0.15);
+      color: #38BDF8;
+      border: 1px solid rgba(14, 165, 233, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-summative {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* Step Cards */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 0.85rem;
+    }
+    .step-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .step-card.completed {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    .step-card.active-step {
+      border-color: #38BDF8;
+      box-shadow: 0 0 16px rgba(14, 165, 233, 0.35);
+      background: rgba(14, 165, 233, 0.06);
+    }
+    .step-card.has-mistake {
+      border-color: rgba(239, 68, 68, 0.55);
+      background: rgba(239, 68, 68, 0.07);
+    }
+    .step-card.unreached {
+      opacity: 0.65;
+    }
+    .step-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .step-num { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); font-family: var(--font-mono); }
+    .step-badge { font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+    .badge-notstarted { background: rgba(255, 255, 255, 0.06); color: var(--text-dim); }
+    .badge-current { background: rgba(14, 165, 233, 0.2); color: #38BDF8; border: 1px solid rgba(14, 165, 233, 0.4); }
+    .badge-completed { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-mistake { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .step-name { font-size: 0.92rem; font-weight: 600; line-height: 1.3; }
+    .step-target { font-size: 0.74rem; color: var(--text-muted); }
+    .step-meta { font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-dim); }
+
+    .step-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.35rem;
+    }
+
+    /* Preset Cards */
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .preset-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .preset-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+    .preset-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+    .preset-icon { font-size: 1.25rem; }
+    .preset-name { font-size: 0.95rem; font-weight: 700; }
+    .preset-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+    .tag-pass { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-fail { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .tag-train { background: rgba(14, 165, 233, 0.15); color: #38BDF8; border: 1px solid rgba(14, 165, 233, 0.3); }
+    .preset-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    /* Assessment Banner & Metrics */
+    .result-banner {
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      text-align: center;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .banner-idle {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed var(--border-light);
+    }
+    .banner-pass {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+      border: 2px solid #10B981;
+      box-shadow: 0 0 24px var(--success-glow);
+    }
+    .banner-fail {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.15) 100%);
+      border: 2px solid #EF4444;
+      box-shadow: 0 0 24px var(--danger-glow);
+    }
+    .banner-training {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.15) 100%);
+      border: 2px solid #0EA5E9;
+      box-shadow: 0 0 24px var(--primary-glow);
+    }
+    .result-verdict { font-size: 1.8rem; font-weight: 800; letter-spacing: 0.02em; }
+    .result-subtitle { font-size: 0.85rem; color: var(--text-muted); max-width: 600px; }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .metric-box {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      text-align: center;
+    }
+    .metric-title { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 0.25rem; font-weight: 600; }
+    .metric-val { font-size: 1.25rem; font-weight: 700; font-family: var(--font-mono); }
+
+    /* AI Box */
+    .ai-box {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.04) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .ai-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(245, 158, 11, 0.2);
+      color: #FBBF24;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .ai-disclaimer {
+      font-size: 0.75rem;
+      color: #FBBF24;
+      background: rgba(245, 158, 11, 0.1);
+      padding: 8px 14px;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      border-left: 3px solid #F59E0B;
+      line-height: 1.4;
+    }
+
+    /* Tables */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 0.5rem; }
+    .data-table th, .data-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .data-table th { background: var(--bg-surface-elevated); color: var(--text-dim); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; }
+
+    /* PDF Preview Box */
+    .pdf-preview-box {
+      width: 100%;
+      height: 640px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+    .pdf-frame { width: 100%; height: 100%; border: none; }
+
+    /* Code Block */
+    .code-block {
+      background: #090D16;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #E2E8F0;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .modal-content {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-title { font-size: 1.15rem; font-weight: 700; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-light);
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🩺</div>
+      <div>
+        <div style="display: flex; align-items: center;">
+          <span class="brand-title">Medical VR Clinical Simulation Console</span>
+          <span class="brand-badge">Temporary Test UI</span>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-dim);">Pure Telemetry Controller & Deterministic Pipeline Exerciser</div>
+      </div>
+    </div>
+
+    <div class="header-user-bar">
+      <div class="status-pill" id="serverStatusPill">
+        <span class="status-dot"></span>
+        <span id="serverStatusText">Backend Online (:8001)</span>
+      </div>
+      <div class="user-tag" id="userDisplayTag">
+        <span>👤</span>
+        <span id="userDisplayName">Not Authenticated</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btnAuthAction" onclick="toggleAuthModal()">Login</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('tab-sim')">🎮 Clinical Simulation Console</button>
+      <button class="tab-btn" onclick="switchTab('tab-presets')">⚡ Test Scenarios</button>
+      <button class="tab-btn" onclick="switchTab('tab-assessment')">📊 Deterministic Assessment & AI</button>
+      <button class="tab-btn" onclick="switchTab('tab-pdf')">📄 Session PDF Viewer</button>
+      <button class="tab-btn" onclick="switchTab('tab-analytics')">📈 Trainee Longitudinal Portfolio</button>
+    </div>
+
+    <!-- TAB 1: CLINICAL SIMULATION CONSOLE (Primary Objective) -->
+    <div id="tab-sim" class="tab-pane active">
+      <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
+          <div>
+            <div class="card-title">🎮 16-Step Venipuncture Clinical Procedure Simulator</div>
+            <div class="card-desc" style="margin-bottom: 0;">Drive the canonical clinical sequence, record real-world attempts and mistakes, and send authoritative telemetry directly to FastAPI.</div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span id="sessionBadgeType" class="badge-formative">TRAINING — FORMATIVE</span>
+          </div>
+        </div>
+
+        <!-- Session Creation / Controls Strip -->
+        <div class="session-controls-strip">
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <label style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600;">Session Type:</label>
+            <select id="simSessionTypeSelect" class="input-text" onchange="updateSessionTypeBadge()" style="font-weight: 600;">
+              <option value="TRAINING">TRAINING (Formative Practice)</option>
+              <option value="TEST">TEST (Summative Formal Evaluation)</option>
+            </select>
+
+            <label style="font-size: 0.78rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600;">Session #:</label>
+            <input type="number" id="simSessionNumberInput" class="input-text" value="1" min="1" max="9999" style="width: 80px;">
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-sm" id="btnStartSession" onclick="startNewSession()">▶ Start Session</button>
+            <button class="btn btn-secondary btn-sm" id="btnBatchUpload" onclick="uploadBatchSteps()" disabled>⚡ Complete All 16 Steps</button>
+            <button class="btn btn-warning btn-sm" id="btnCompleteSession" onclick="completeCurrentSession()" disabled>🏁 Complete Session</button>
+          </div>
+        </div>
+
+        <!-- Live Telemetry State Bar (Section 20) -->
+        <div class="sim-bar">
+          <div class="sim-stat">
+            <span class="sim-stat-label">Session ID</span>
+            <span class="sim-stat-val" id="telemetrySessionId">--</span>
+          </div>
+          <div class="sim-stat">
+            <span class="sim-stat-label">Session Type</span>
+            <span class="sim-stat-val" id="telemetrySessionType">--</span>
+          </div>
+          <div class="sim-stat">
+            <span class="sim-stat-label">Session Number</span>
+            <span class="sim-stat-val" id="telemetrySessionNumber">--</span>
+          </div>
+          <div class="sim-stat">
+            <span class="sim-stat-label">Completed Steps</span>
+            <span class="sim-stat-val" id="telemetryCompletedSteps">--</span>
+          </div>
+          <div class="sim-stat">
+            <span class="sim-stat-label">Recorded Mistakes</span>
+            <span class="sim-stat-val" id="telemetryMistakesCount" style="color: #F87171;">--</span>
+          </div>
+          <div class="sim-stat">
+            <span class="sim-stat-label">Elapsed Time</span>
+            <span class="sim-stat-val" id="telemetryElapsedTime">--</span>
+          </div>
+        </div>
+
+        <!-- Canonical 16 Steps Grid (Section 10) -->
+        <h4 style="font-size: 0.88rem; margin-bottom: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Canonical Venipuncture Steps (0–15)</h4>
+        <div class="steps-grid" id="canonicalStepsContainer">
+          <!-- Rendered dynamically from CANONICAL_STEPS -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 2: TEST SCENARIO CONTROLS (Section 22) -->
+    <div id="tab-presets" class="tab-pane" style="display: none;">
+      <div class="card">
+        <div class="card-title">⚡ Development & QA Quick Test Scenarios</div>
+        <div class="card-desc">Simulate full clinical procedures using pure HTTP API calls (never direct DB writes) to verify PASS, FAIL, Partial, and Training workflows.</div>
+
+        <div class="presets-grid">
+          <!-- Scenario A: TEST Pass -->
+          <div class="preset-card" onclick="runScenarioCleanPass()">
+            <div>
+              <div class="preset-header">
+                <span class="preset-icon">🎯</span>
+                <span class="preset-name">Pristine TEST Pass</span>
+                <span class="preset-tag tag-pass">TEST PASS</span>
+              </div>
+              <p class="preset-desc">16/16 steps completed with 0 mistakes, 100% accuracy, and optimal execution times. Verifies deterministic PASS verdict.</p>
+            </div>
+            <button class="btn btn-sm btn-success" style="width: 100%;"><span id="sc-pass-loader" style="display:none">⏳ </span>Run TEST Pass</button>
+          </div>
+
+          <!-- Scenario B: TEST Fail -->
+          <div class="preset-card" onclick="runScenarioMistakeFail()">
+            <div>
+              <div class="preset-header">
+                <span class="preset-icon">❌</span>
+                <span class="preset-name">Mistake on Step 7 (Cannula)</span>
+                <span class="preset-tag tag-fail">TEST FAIL</span>
+              </div>
+              <p class="preset-desc">Trainee records a WRONG_OBJECT mistake on Step 7 with multiple attempts. Verifies authoritative FAIL and AI remediation.</p>
+            </div>
+            <button class="btn btn-sm btn-danger" style="width: 100%;"><span id="sc-fail-loader" style="display:none">⏳ </span>Run TEST Fail</button>
+          </div>
+
+          <!-- Scenario C: Incomplete 2/16 -->
+          <div class="preset-card" onclick="runScenarioPartial()">
+            <div>
+              <div class="preset-header">
+                <span class="preset-icon">⏳</span>
+                <span class="preset-name">Incomplete Session (2/16)</span>
+                <span class="preset-tag tag-fail">PARTIAL</span>
+              </div>
+              <p class="preset-desc">Completes only Steps 0 and 1, then terminates session early. Verifies 2/16 status and that unreached 14 steps remain Not Reached.</p>
+            </div>
+            <button class="btn btn-sm btn-secondary" style="width: 100%;"><span id="sc-part-loader" style="display:none">⏳ </span>Run Partial 2/16</button>
+          </div>
+
+          <!-- Scenario D: Formative Training -->
+          <div class="preset-card" onclick="runScenarioTraining()">
+            <div>
+              <div class="preset-header">
+                <span class="preset-icon">🎓</span>
+                <span class="preset-name">Formative Training Practice</span>
+                <span class="preset-tag tag-train">FORMATIVE</span>
+              </div>
+              <p class="preset-desc">Exercises educational practice mode with step guidance. Verifies EXCELLENT / SATISFACTORY formative status.</p>
+            </div>
+            <button class="btn btn-sm" style="width: 100%;"><span id="sc-train-loader" style="display:none">⏳ </span>Run Training</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DETERMINISTIC ASSESSMENT & AI FEEDBACK (Sections 15, 16, 17) -->
+    <div id="tab-assessment" class="tab-pane" style="display: none;">
+      <div class="card">
+        <div class="card-title">📊 Authoritative Deterministic Assessment & Grounded AI Feedback</div>
+        <div class="card-desc">Scoring, accuracy, and verdicts are computed exclusively by backend services. AI provides grounded educational explanation without altering results.</div>
+
+        <!-- Result Banner -->
+        <div class="result-banner banner-idle" id="assessmentResultBanner">
+          <div class="result-verdict" id="assessmentVerdictText">NO ACTIVE RESULT</div>
+          <div class="result-subtitle" id="assessmentSubtitleText">Complete a clinical simulation session to view authoritative backend grading.</div>
+        </div>
+
+        <!-- Authoritative Metrics Grid (Section 16) -->
+        <div class="metric-grid">
+          <div class="metric-box">
+            <div class="metric-title">Completed Steps</div>
+            <div class="metric-val" id="resCompletedSteps">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Accuracy</div>
+            <div class="metric-val" id="resAccuracy" style="color: #38BDF8;">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">First Attempt Acc.</div>
+            <div class="metric-val" id="resFirstAttemptAcc">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Total Mistakes</div>
+            <div class="metric-val" id="resTotalMistakes" style="color: #F87171;">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Total Attempts</div>
+            <div class="metric-val" id="resTotalAttempts">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Total Time</div>
+            <div class="metric-val" id="resTotalTime">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Avg Step Time</div>
+            <div class="metric-val" id="resAvgStepTime">--</div>
+          </div>
+        </div>
+
+        <!-- Mistakes & Weak Areas Table -->
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.88rem; margin-bottom: 0.5rem; color: var(--text-muted);">Recorded Mistakes & Identified Weak Areas</h4>
+          <table class="data-table" id="assessmentMistakesTable">
+            <thead>
+              <tr>
+                <th>Step #</th>
+                <th>Step Name</th>
+                <th>Classification</th>
+                <th>Attempt</th>
+                <th>Evidence / Context</th>
+              </tr>
+            </thead>
+            <tbody id="assessmentMistakesBody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-dim);">No mistakes recorded for current session.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- AI Educational Feedback Box (Section 17) -->
+        <div class="ai-box">
+          <div class="ai-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1.15rem;">🧠</span>
+              <span style="font-weight: 700; font-size: 0.95rem;">Medical LLM Educational Feedback</span>
+              <span class="ai-badge" id="aiModelBadge">openbiollm</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <select id="llmModelSelect" class="input-text" style="font-size: 0.75rem; padding: 4px 8px;">
+                <option value="openbiollm">OpenBioLLM-8B (Default)</option>
+                <option value="llama-3.2-3b">Llama 3.2 3B</option>
+                <option value="medical-transformer">MedicalTransformerLM 110M</option>
+              </select>
+              <button class="btn btn-sm btn-warning" onclick="requestAIFeedback()"><span id="ai-loader" style="display:none">⏳ </span>Generate AI Educational Feedback</button>
+            </div>
+          </div>
+
+          <div class="ai-disclaimer">
+            <strong>Authoritative Boundary:</strong> The deterministic assessment engine is authoritative. The AI-generated feedback is for educational and explanatory purposes only.
+          </div>
+
+          <div id="aiContentContainer">
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;" id="aiSummaryText">AI feedback will appear here after session completion or when requested.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;" id="aiSideBySide">
+              <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); padding: 0.75rem; border-radius: 6px;">
+                <h5 style="color: #34D399; font-size: 0.8rem; margin-bottom: 0.35rem;">✓ Demonstrated Strengths</h5>
+                <ul id="aiStrengthsList" style="font-size: 0.78rem; padding-left: 1.2rem; color: #E2E8F0;">
+                  <li>None listed</li>
+                </ul>
+              </div>
+              <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); padding: 0.75rem; border-radius: 6px;">
+                <h5 style="color: #F87171; font-size: 0.8rem; margin-bottom: 0.35rem;">⚠ Target Improvement Areas</h5>
+                <ul id="aiImprovementsList" style="font-size: 0.78rem; padding-left: 1.2rem; color: #E2E8F0;">
+                  <li>None listed</li>
+                </ul>
+              </div>
+            </div>
+
+            <div style="margin-top: 1rem;" id="aiRecsContainer">
+              <h5 style="font-size: 0.8rem; margin-bottom: 0.35rem; color: #FBBF24;">📋 Actionable Recommendations</h5>
+              <ul id="aiRecsList" style="font-size: 0.78rem; padding-left: 1.2rem; color: var(--text-muted);">
+                <li>No recommendations available yet.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- PDF Actions (Sections 18 & 19) -->
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary" onclick="switchTab('tab-pdf')">📄 Open PDF Viewer</button>
+          <button class="btn btn-primary" onclick="downloadSessionPDF()">📥 Download Individual Session PDF</button>
+          <button class="btn btn-warning" onclick="downloadPortfolioPDF()">📂 Download Longitudinal Portfolio PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SESSION PDF VIEWER (Section 18) -->
+    <div id="tab-pdf" class="tab-pane" style="display: none;">
+      <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div class="card-title">📄 Official 2-Page Clinical PDF Evaluation</div>
+            <div class="card-desc" style="margin-bottom: 0;">Compiled deterministically via ReportLab with 10 standardized clinical sections.</div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-primary btn-sm" onclick="downloadSessionPDF()">📥 Download Session PDF</button>
+            <button class="btn btn-warning btn-sm" onclick="downloadPortfolioPDF()">📂 Download Portfolio PDF</button>
+          </div>
+        </div>
+
+        <div class="pdf-preview-box">
+          <iframe id="pdfFrame" class="pdf-frame" src="about:blank"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: TRAINEE LONGITUDINAL PORTFOLIO (Section 19) -->
+    <div id="tab-analytics" class="tab-pane" style="display: none;">
+      <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div class="card-title">📈 Longitudinal Trainee Clinical Portfolio</div>
+            <div class="card-desc" style="margin-bottom: 0;">Tracks longitudinal learning curve, recurring weak areas, and adaptive guidance across all historical sessions.</div>
+          </div>
+          <button class="btn btn-warning btn-sm" onclick="downloadPortfolioPDF()">📂 Download 5-Page Portfolio PDF</button>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-box">
+            <div class="metric-title">Total Completed Sessions</div>
+            <div class="metric-val" id="anTotalSessions">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Average Accuracy</div>
+            <div class="metric-val" id="anAvgAccuracy" style="color: #38BDF8;">--</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-title">Historical Learning Trend</div>
+            <div class="metric-val" id="anTrend" style="font-size: 0.85rem; color: #34D399;">--</div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 0.9rem; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text-muted);">Cumulative Recurring Weak Areas</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Step ID</th>
+              <th>Procedure Step Name</th>
+              <th>Total Attempts</th>
+              <th>Total Mistakes</th>
+              <th>Mistake Ratio</th>
+              <th>Severity</th>
+            </tr>
+          </thead>
+          <tbody id="anWeakAreasBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-dim);">Loading cumulative data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUTH / LOGIN MODAL (Section 7) -->
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔐 Clinical Trainee Authentication</h3>
+        <button class="btn btn-secondary btn-sm" onclick="toggleAuthModal()">✕</button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--text-muted);">
+        Authenticate with the existing FastAPI OAuth2 endpoint (<code>POST /api/auth/login</code>) to obtain a secure JWT Bearer token.
+      </p>
+
+      <form onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Email / Username</label>
+          <input type="email" id="authEmailInput" class="input-text" style="width: 100%;" value="alex.rivera@medvr.org" required>
+        </div>
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Password</label>
+          <input type="password" id="authPasswordInput" class="input-text" style="width: 100%;" value="Pass1234!" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="toggleAuthModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitLogin">Sign In</button>
+        </div>
+      </form>
+
+      <hr style="border: 0; border-top: 1px solid var(--border-color);">
+      <div>
+        <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 8px;">Quick Test Trainee Switcher:</span>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="quickLoginUser('alex.rivera@medvr.org', 'Pass1234!', 'Dr. Alex Rivera')">Dr. Alex Rivera (User A)</button>
+          <button class="btn btn-secondary btn-sm" onclick="quickLoginUser('jordan.taylor@medvr.org', 'Pass1234!', 'Dr. Jordan Taylor')">Dr. Jordan Taylor (User B)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORD MISTAKE MODAL (Section 13) -->
+  <div class="modal-backdrop" id="mistakeModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="mistakeModalTitle">⚠ Record Mistake for Step</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeMistakeModal()">✕</button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--text-muted);">
+        Select an allowed mistake type supported by the backend schema (<code>WRONG_OBJECT</code>, <code>WRONG_ZONE</code>, <code>INCORRECT_PLACEMENT</code>).
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Mistake Type</label>
+          <select id="modalMistakeTypeSelect" class="input-text" style="width: 100%;">
+            <option value="WRONG_OBJECT">WRONG_OBJECT — Incorrect clinical tool or equipment selected</option>
+            <option value="WRONG_ZONE">WRONG_ZONE — Puncture or application outside designated anatomical zone</option>
+            <option value="INCORRECT_PLACEMENT">INCORRECT_PLACEMENT — Incorrect angle, depth, or orientation</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px;">Attempt Number</label>
+          <input type="number" id="modalAttemptNumberInput" class="input-text" value="1" min="1" max="10" style="width: 100px;">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+          <button class="btn btn-secondary" onclick="closeMistakeModal()">Cancel</button>
+          <button class="btn btn-danger" onclick="submitRecordedMistake()">⚠ Submit Mistake</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastBox">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <script>
+    // Canonical 16-Step Venipuncture Protocol (Section 10)
+    const CANONICAL_STEPS = [
+      { id: 0, name: "Wash Hands", trigger: "Sink / WaterTrigger" },
+      { id: 1, name: "Wear Gloves", trigger: "Glove Box / Hands" },
+      { id: 2, name: "Apply Tourniquet", trigger: "Upper Arm / Tourniquet" },
+      { id: 3, name: "Take Cotton", trigger: "Cotton Box" },
+      { id: 4, name: "Dip Cotton in Spirit", trigger: "Spirit Bottle" },
+      { id: 5, name: "Clean Area", trigger: "Patient Puncture Site" },
+      { id: 6, name: "Dispose Cotton", trigger: "Medical Dustbin" },
+      { id: 7, name: "Take Cannula", trigger: "Cannula Tray" },
+      { id: 8, name: "Insert Cannula", trigger: "Vein Trigger Zone" },
+      { id: 9, name: "Remove Tourniquet", trigger: "Arm Release" },
+      { id: 10, name: "Take Blood Collection Tube", trigger: "Tube Rack" },
+      { id: 11, name: "Insert Tube", trigger: "Tube Slot / SnapZone" },
+      { id: 12, name: "Blood Collection", trigger: "Blood Trigger Mark" },
+      { id: 13, name: "Remove Tube", trigger: "Tube Slot Release" },
+      { id: 14, name: "Remove Cannula", trigger: "Vein Extraction" },
+      { id: 15, name: "Dispose Cannula", trigger: "Sharps Disposal Bin" }
+    ];
+
+    // Client State (Input / Telemetry Only — Section 2)
+    let currentToken = "";
+    let activeUser = null;
+    let currentSession = null;
+    let activeSessionReport = null;
+    let manualStepIndex = 0;
+    let stepMistakesTrack = {}; // step_id -> array of recorded mistakes
+    let stepAttemptsTrack = {}; // step_id -> number of attempts
+    let sessionTimerInterval = null;
+    let sessionStartTime = null;
+    let activeMistakeTargetStep = null;
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      renderCanonicalSteps();
+      await autoLoginDefaultUser();
+    });
+
+    function showToast(msg, icon = "ℹ️") {
+      const toast = document.getElementById("toastBox");
+      document.getElementById("toastIcon").innerText = icon;
+      document.getElementById("toastMsg").innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-pane").forEach(el => el.style.display = "none");
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+      
+      const targetPane = document.getElementById(tabId);
+      if (targetPane) targetPane.style.display = "block";
+      
+      const btn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick") && b.getAttribute("onclick").includes(tabId));
+      if (btn) btn.classList.add("active");
+
+      if (tabId === "tab-analytics") loadLongitudinalAnalytics();
+      if (tabId === "tab-pdf") loadSessionPdfPreview();
+    }
+
+    /* ---------------------------------------------------- */
+    /* AUTHENTICATION WORKFLOW (Section 7)                 */
+    /* ---------------------------------------------------- */
+    function toggleAuthModal() {
+      const modal = document.getElementById("authModal");
+      if (currentToken) {
+        // Log out
+        logoutUser();
+      } else {
+        modal.style.display = (modal.style.display === "flex") ? "none" : "flex";
+      }
+    }
+
+    function logoutUser() {
+      currentToken = "";
+      activeUser = null;
+      document.getElementById("userDisplayName").innerText = "Not Authenticated";
+      document.getElementById("btnAuthAction").innerText = "Login";
+      document.getElementById("btnAuthAction").className = "btn btn-secondary btn-sm";
+      showToast("Logged out successfully.", "👋");
+    }
+
+    async function autoLoginDefaultUser() {
+      await quickLoginUser("alex.rivera@medvr.org", "Pass1234!", "Dr. Alex Rivera");
+    }
+
+    async function quickLoginUser(email, password, displayName) {
+      document.getElementById("authEmailInput").value = email;
+      document.getElementById("authPasswordInput").value = password;
+      await performLogin(email, password, displayName);
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("authEmailInput").value.trim();
+      const pass = document.getElementById("authPasswordInput").value;
+      await performLogin(email, pass, email);
+    }
+
+    async function performLogin(email, password, displayName) {
+      try {
+        const formData = new URLSearchParams();
+        formData.append("username", email);
+        formData.append("password", password);
+
+        let res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData
+        });
+
+        if (!res.ok) {
+          // Attempt self-registration if account does not exist
+          await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: displayName || email.split("@")[0],
+              email: email,
+              password: password
+            })
+          });
+
+          res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData
+          });
+        }
+
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || "Authentication failed");
+        }
+
+        const data = await res.json();
+        currentToken = data.access_token;
+        activeUser = {
+          id: data.user_id,
+          name: data.name,
+          email: data.email
+        };
+
+        document.getElementById("userDisplayName").innerText = `${data.name} (ID: ${data.user_id})`;
+        document.getElementById("btnAuthAction").innerText = "Logout";
+        document.getElementById("btnAuthAction").className = "btn btn-danger btn-sm";
+        document.getElementById("authModal").style.display = "none";
+        showToast(`Authenticated as ${data.name}!`, "✅");
+      } catch (err) {
+        showToast(`Login error: ${err.message}`, "❌");
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* SESSION WORKFLOW (Sections 8, 9, 20)                 */
+    /* ---------------------------------------------------- */
+    function updateSessionTypeBadge() {
+      const mode = document.getElementById("simSessionTypeSelect").value;
+      const badge = document.getElementById("sessionBadgeType");
+      if (mode === "TEST") {
+        badge.className = "badge-summative";
+        badge.innerText = "TEST — SUMMATIVE";
+      } else {
+        badge.className = "badge-formative";
+        badge.innerText = "TRAINING — FORMATIVE";
+      }
+    }
+
+    async function startNewSession() {
+      if (!currentToken || !activeUser) {
+        showToast("Please authenticate before starting a session.", "⚠️");
+        toggleAuthModal();
+        return;
+      }
+
+      const mode = document.getElementById("simSessionTypeSelect").value;
+      const sessionNum = parseInt(document.getElementById("simSessionNumberInput").value) || 1;
+
+      try {
+        const res = await fetch("/api/sessions/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentToken}`
+          },
+          body: JSON.stringify({
+            user_id: activeUser.id,
+            session_type: mode,
+            session_number: sessionNum
+          })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Failed to create session");
+        }
+
+        currentSession = await res.json();
+        manualStepIndex = 0;
+        stepMistakesTrack = {};
+        stepAttemptsTrack = {};
+        activeSessionReport = null;
+
+        CANONICAL_STEPS.forEach(s => {
+          stepMistakesTrack[s.id] = [];
+          stepAttemptsTrack[s.id] = 1;
+        });
+
+        // Update telemetry bar (Section 20)
+        document.getElementById("telemetrySessionId").innerText = currentSession.id;
+        document.getElementById("telemetrySessionType").innerText = currentSession.session_type;
+        document.getElementById("telemetrySessionNumber").innerText = currentSession.session_number;
+        document.getElementById("telemetryCompletedSteps").innerText = "0 / 16";
+        document.getElementById("telemetryMistakesCount").innerText = "0";
+        document.getElementById("telemetryElapsedTime").innerText = "00:00";
+
+        // Start elapsed timer
+        if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+        sessionStartTime = Date.now();
+        sessionTimerInterval = setInterval(() => {
+          const secs = Math.floor((Date.now() - sessionStartTime) / 1000);
+          const m = String(Math.floor(secs / 60)).padStart(2, "0");
+          const s = String(secs % 60).padStart(2, "0");
+          document.getElementById("telemetryElapsedTime").innerText = `${m}:${s}`;
+        }, 1000);
+
+        document.getElementById("btnStartSession").disabled = true;
+        document.getElementById("btnBatchUpload").disabled = false;
+        document.getElementById("btnCompleteSession").disabled = false;
+
+        renderCanonicalSteps();
+        updateStepControls();
+        showToast(`Session #${currentSession.session_number} started (${currentSession.session_type})`, "🎮");
+      } catch (err) {
+        showToast(`Session creation error: ${err.message}`, "❌");
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* STEP SIMULATION & ATTEMPT TRACKING (Sections 10-13) */
+    /* ---------------------------------------------------- */
+    function renderCanonicalSteps() {
+      const container = document.getElementById("canonicalStepsContainer");
+      container.innerHTML = "";
+
+      CANONICAL_STEPS.forEach(step => {
+        const card = document.createElement("div");
+        card.id = `step-card-${step.id}`;
+        card.className = "step-card unreached";
+        card.innerHTML = `
+          <div class="step-top">
+            <span class="step-num">STEP ${step.id.toString().padStart(2, "0")}</span>
+            <span class="step-badge badge-notstarted" id="badge-step-${step.id}">Not Reached</span>
+          </div>
+          <div class="step-name">${step.name}</div>
+          <div class="step-target">🎯 Trigger: ${step.trigger}</div>
+          <div class="step-meta" id="meta-step-${step.id}">Attempts: 0 | Mistakes: 0</div>
+          <div class="step-actions">
+            <button class="btn btn-sm btn-primary" onclick="completeStepManual(${step.id})" id="btn-complete-${step.id}" disabled>✓ Complete Step</button>
+            <button class="btn btn-sm btn-danger" onclick="openMistakeModal(${step.id})" id="btn-mistake-${step.id}" disabled>⚠ Record Mistake</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateStepControls() {
+      CANONICAL_STEPS.forEach(s => {
+        const btnComp = document.getElementById(`btn-complete-${s.id}`);
+        const btnMist = document.getElementById(`btn-mistake-${s.id}`);
+        const card = document.getElementById(`step-card-${s.id}`);
+        const badge = document.getElementById(`badge-step-${s.id}`);
+        const meta = document.getElementById(`meta-step-${s.id}`);
+
+        const mistakes = stepMistakesTrack[s.id] || [];
+        const attempts = stepAttemptsTrack[s.id] || 1;
+        meta.innerText = `Attempts: ${attempts} | Mistakes: ${mistakes.length}`;
+
+        if (!currentSession) {
+          btnComp.disabled = true;
+          btnMist.disabled = true;
+          card.className = "step-card unreached";
+          badge.className = "step-badge badge-notstarted";
+          badge.innerText = "Not Reached";
+          return;
+        }
+
+        if (s.id < manualStepIndex) {
+          // Completed step
+          btnComp.disabled = true;
+          btnMist.disabled = true;
+          card.className = "step-card completed" + (mistakes.length > 0 ? " has-mistake" : "");
+          badge.className = mistakes.length > 0 ? "step-badge badge-mistake" : "step-badge badge-completed";
+          badge.innerText = mistakes.length > 0 ? `Completed (${mistakes.length} err)` : "✓ Completed";
+        } else if (s.id === manualStepIndex) {
+          // Active step
+          btnComp.disabled = false;
+          btnMist.disabled = false;
+          card.className = "step-card active-step" + (mistakes.length > 0 ? " has-mistake" : "");
+          badge.className = mistakes.length > 0 ? "step-badge badge-mistake" : "step-badge badge-current";
+          badge.innerText = mistakes.length > 0 ? `Current (Mistake on Att #${attempts})` : "Current Step";
+        } else {
+          // Unreached step
+          btnComp.disabled = true;
+          btnMist.disabled = true;
+          card.className = "step-card unreached";
+          badge.className = "step-badge badge-notstarted";
+          badge.innerText = "Not Reached";
+        }
+      });
+    }
+
+    async function completeStepManual(stepId) {
+      if (!currentSession) return;
+
+      const mistakes = stepMistakesTrack[stepId] || [];
+      const attempts = stepAttemptsTrack[stepId] || 1;
+      const firstAttemptCorrect = (mistakes.length === 0);
+
+      try {
+        const payload = {
+          session_id: currentSession.id,
+          step_id: stepId,
+          attempts: attempts,
+          mistakes: mistakes.length,
+          first_attempt_correct: firstAttemptCorrect,
+          step_time_seconds: 7.0,
+          completed: true
+        };
+
+        const res = await fetch("/api/step-performance/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Error recording step performance");
+        }
+
+        manualStepIndex++;
+        document.getElementById("telemetryCompletedSteps").innerText = `${manualStepIndex} / 16`;
+        updateStepControls();
+
+        if (manualStepIndex >= 16) {
+          showToast("All 16 steps completed! Click 'Complete Session' to finalize.", "🎉");
+        } else {
+          showToast(`Step ${stepId} completed!`, "✓");
+        }
+      } catch (err) {
+        showToast(`Backend error: ${err.message}`, "❌");
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* MISTAKE RECORDING (Section 13)                       */
+    /* ---------------------------------------------------- */
+    function openMistakeModal(stepId) {
+      activeMistakeTargetStep = stepId;
+      const stepName = CANONICAL_STEPS[stepId]?.name || `Step ${stepId}`;
+      document.getElementById("mistakeModalTitle").innerText = `⚠ Record Mistake — Step ${stepId}: ${stepName}`;
+      const currentAttempts = stepAttemptsTrack[stepId] || 1;
+      document.getElementById("modalAttemptNumberInput").value = currentAttempts;
+      document.getElementById("mistakeModal").style.display = "flex";
+    }
+
+    function closeMistakeModal() {
+      document.getElementById("mistakeModal").style.display = "none";
+    }
+
+    async function submitRecordedMistake() {
+      if (!currentSession || activeMistakeTargetStep === null) return;
+
+      const stepId = activeMistakeTargetStep;
+      const mistakeType = document.getElementById("modalMistakeTypeSelect").value;
+      const attemptNum = parseInt(document.getElementById("modalAttemptNumberInput").value) || 1;
+
+      try {
+        const payload = {
+          session_id: currentSession.id,
+          step_id: stepId,
+          mistake_type: mistakeType,
+          attempt_number: attemptNum
+        };
+
+        const res = await fetch("/api/mistakes/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentToken}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Failed to record mistake");
+        }
+
+        const recordedMistake = await res.json();
+        stepMistakesTrack[stepId].push(recordedMistake);
+        // Increment attempts for this step
+        stepAttemptsTrack[stepId] = Math.max(stepAttemptsTrack[stepId] + 1, attemptNum + 1);
+
+        // Update live mistakes counter
+        let totalMistakes = 0;
+        Object.values(stepMistakesTrack).forEach(mList => totalMistakes += mList.length);
+        document.getElementById("telemetryMistakesCount").innerText = totalMistakes;
+
+        updateStepControls();
+        closeMistakeModal();
+        showToast(`Mistake recorded on Step ${stepId}: ${mistakeType} (Attempt #${attemptNum})`, "⚠️");
+      } catch (err) {
+        showToast(`Mistake error: ${err.message}`, "❌");
+      }
+    }
+
+    async function uploadBatchSteps() {
+      if (!currentSession) return;
+      showToast("Batch uploading remaining steps to backend...", "⏳");
+
+      const batch = [];
+      for (let i = manualStepIndex; i < 16; i++) {
+        const mistakes = stepMistakesTrack[i] || [];
+        const attempts = stepAttemptsTrack[i] || 1;
+        batch.push({
+          session_id: currentSession.id,
+          step_id: i,
+          attempts: attempts,
+          mistakes: mistakes.length,
+          first_attempt_correct: (mistakes.length === 0),
+          step_time_seconds: 7.2,
+          completed: true
+        });
+      }
+
+      try {
+        const res = await fetch("/api/step-performance/batch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${currentToken}`
+          },
+          body: JSON.stringify(batch)
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Batch upload failed");
+        }
+
+        manualStepIndex = 16;
+        document.getElementById("telemetryCompletedSteps").innerText = "16 / 16";
+        updateStepControls();
+        showToast("Batch step upload complete (16/16 steps ingested)!", "⚡");
+      } catch (err) {
+        showToast(`Batch error: ${err.message}`, "❌");
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* SESSION COMPLETION & BACKEND RESULTS (Sections 15-17)*/
+    /* ---------------------------------------------------- */
+    async function completeCurrentSession() {
+      if (!currentSession) return;
+
+      if (sessionTimerInterval) clearInterval(sessionTimerInterval);
+      showToast("Completing session and requesting authoritative assessment...", "⏳");
+
+      try {
+        // 1. Call completion endpoint (POST /api/sessions/{id}/complete)
+        const compRes = await fetch(`/api/sessions/${currentSession.id}/complete`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        if (!compRes.ok) {
+          const err = await compRes.json();
+          throw new Error(err.detail || "Failed to complete session");
+        }
+
+        // 2. Call authoritative AI & assessment endpoint
+        const reportRes = await fetch(`/api/reports/${currentSession.id}/ai`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        if (!reportRes.ok) {
+          const err = await reportRes.json();
+          throw new Error(err.detail || "Failed to retrieve assessment report");
+        }
+
+        const report = await reportRes.json();
+        activeSessionReport = report;
+
+        // Populate assessment view strictly from backend response
+        displayBackendAssessmentResults(report);
+        switchTab("tab-assessment");
+
+        document.getElementById("btnCompleteSession").disabled = true;
+        document.getElementById("btnBatchUpload").disabled = true;
+        document.getElementById("btnStartSession").disabled = false;
+        showToast("Session successfully finalized & graded by backend!", "✅");
+      } catch (err) {
+        showToast(`Completion error: ${err.message}`, "❌");
+      }
+    }
+
+    function displayBackendAssessmentResults(report) {
+      const deter = report.deterministic_assessment || report.assessment || {};
+      const verdict = deter.result || deter.overall_result || "COMPLETED";
+
+      const banner = document.getElementById("assessmentResultBanner");
+      const vText = document.getElementById("assessmentVerdictText");
+      const subText = document.getElementById("assessmentSubtitleText");
+
+      if (verdict === "PASS") {
+        banner.className = "result-banner banner-pass";
+        vText.innerText = "TEST RESULT: PASS ✓";
+        vText.style.color = "#34D399";
+        subText.innerText = "Authoritative Deterministic Assessment: All 16 protocol steps completed with 0 mistakes and >= 80% accuracy.";
+      } else if (verdict === "FAIL") {
+        banner.className = "result-banner banner-fail";
+        vText.innerText = "TEST RESULT: FAIL ✕";
+        vText.style.color = "#F87171";
+        subText.innerText = "Authoritative Deterministic Assessment: Procedure contained mistakes or was incomplete.";
+      } else {
+        banner.className = "result-banner banner-training";
+        vText.innerText = `TRAINING STATUS: ${verdict}`;
+        vText.style.color = "#38BDF8";
+        subText.innerText = "Authoritative formative performance evaluation for educational practice.";
+      }
+
+      // Display metrics verbatim from backend
+      document.getElementById("resCompletedSteps").innerText = deter.completed_steps ?? manualStepIndex;
+      document.getElementById("resAccuracy").innerText = `${deter.accuracy ?? 0}%`;
+      document.getElementById("resFirstAttemptAcc").innerText = `${deter.first_attempt_accuracy ?? 0}%`;
+      document.getElementById("resTotalMistakes").innerText = deter.total_mistakes ?? 0;
+      document.getElementById("resTotalAttempts").innerText = deter.total_attempts ?? 0;
+      document.getElementById("resTotalTime").innerText = `${Math.round(deter.total_time_seconds || 0)}s`;
+      document.getElementById("resAvgStepTime").innerText = `${Math.round(deter.average_step_time_seconds || 0)}s`;
+
+      // Render mistakes & weak areas table
+      const mBody = document.getElementById("assessmentMistakesBody");
+      const mistakes = report.mistakes || [];
+      const weakAreas = report.weak_areas || [];
+
+      if (mistakes.length === 0 && weakAreas.length === 0) {
+        mBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #34D399;">✓ Flawless procedure — 0 mistakes recorded across all steps.</td></tr>`;
+      } else {
+        let rows = "";
+        mistakes.forEach(m => {
+          const stepName = CANONICAL_STEPS.find(s => s.id === m.step_id)?.name || `Step ${m.step_id}`;
+          rows += `
+            <tr>
+              <td><span style="font-family: var(--font-mono); color: #38BDF8;">Step ${m.step_id}</span></td>
+              <td><strong>${stepName}</strong></td>
+              <td><span style="color: #F87171; font-weight: 600;">${m.mistake_type}</span></td>
+              <td>Attempt #${m.attempt_number || 1}</td>
+              <td style="color: var(--text-dim);">Logged telemetry event</td>
+            </tr>
+          `;
+        });
+        weakAreas.forEach(wa => {
+          rows += `
+            <tr style="background: rgba(245, 158, 11, 0.05);">
+              <td><span style="font-family: var(--font-mono); color: #FBBF24;">Step ${wa.step_id}</span></td>
+              <td><strong>${wa.step_name}</strong></td>
+              <td><span style="color: #FBBF24; font-weight: 600;">WEAK AREA (${wa.severity})</span></td>
+              <td>-</td>
+              <td>${wa.mistakes} mistake(s) across ${wa.attempts} attempt(s)</td>
+            </tr>
+          `;
+        });
+        mBody.innerHTML = rows;
+      }
+
+      // Render AI educational feedback
+      const ai = report.ai_feedback;
+      if (ai) {
+        document.getElementById("aiModelBadge").innerText = report.model_name || "openbiollm";
+        document.getElementById("aiSummaryText").innerText = ai.summary || "Summary generated.";
+
+        const strUl = document.getElementById("aiStrengthsList");
+        strUl.innerHTML = (ai.strengths && ai.strengths.length > 0)
+          ? ai.strengths.map(s => `<li>${s}</li>`).join("")
+          : "<li>Clean step execution</li>";
+
+        const impUl = document.getElementById("aiImprovementsList");
+        impUl.innerHTML = (ai.improvement_areas && ai.improvement_areas.length > 0)
+          ? ai.improvement_areas.map(imp => typeof imp === "object" ? `<li><strong>Step ${imp.step_id} (${imp.step_name}):</strong> ${imp.evidence}</li>` : `<li>${imp}</li>`).join("")
+          : "<li>No critical improvement areas flagged</li>";
+
+        const recUl = document.getElementById("aiRecsList");
+        recUl.innerHTML = (ai.recommendations && ai.recommendations.length > 0)
+          ? ai.recommendations.map(r => `<li>${r}</li>`).join("")
+          : "<li>Review standardized protocol steps prior to next session.</li>";
+      }
+
+      // Update embedded PDF frame via authenticated fetch
+      const sessId = report.session_id || currentSession.id;
+      loadSessionPdfPreview(sessId);
+    }
+
+    async function requestAIFeedback() {
+      if (!currentSession && !activeSessionReport) {
+        showToast("No active session to generate critique for.", "⚠️");
+        return;
+      }
+      const sessId = activeSessionReport ? activeSessionReport.session_id : currentSession.id;
+      const model = document.getElementById("llmModelSelect").value;
+
+      document.getElementById("ai-loader").style.display = "inline";
+      showToast(`Generating educational critique with ${model}...`, "⏳");
+
+      try {
+        const res = await fetch(`/api/reports/${sessId}/ai?model_name=${model}`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || "Failed to generate AI feedback");
+        }
+
+        const data = await res.json();
+        activeSessionReport = data;
+        displayBackendAssessmentResults(data);
+        showToast(`AI Clinical Feedback generated successfully (${model})!`, "🧠");
+      } catch (err) {
+        showToast(`AI generation note: ${err.message}`, "❌");
+      } finally {
+        document.getElementById("ai-loader").style.display = "none";
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* PDF DOWNLOADS & PREVIEWS (Sections 18 & 19)          */
+    /* ---------------------------------------------------- */
+    async function downloadAuthenticatedPDF(url, filename) {
+      if (!currentToken) {
+        showToast("Please authenticate to download reports.", "⚠️");
+        toggleAuthModal();
+        return;
+      }
+      showToast(`Downloading ${filename}...`, "⏳");
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${currentToken}`
+          }
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `Server returned ${res.status}`);
+        }
+
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+        showToast(`Downloaded: ${filename}`, "📥");
+      } catch (err) {
+        showToast(`PDF download failed: ${err.message}`, "❌");
+      }
+    }
+
+    async function downloadSessionPDF() {
+      if (!currentSession && !activeSessionReport) {
+        showToast("No active session report to download.", "⚠️");
+        return;
+      }
+      const sessId = activeSessionReport ? (activeSessionReport.session_id || activeSessionReport.id) : currentSession.id;
+      await downloadAuthenticatedPDF(`/api/reports/${sessId}/pdf`, `venipuncture_report_session_${sessId}.pdf`);
+    }
+
+    async function downloadPortfolioPDF() {
+      if (!activeUser) {
+        showToast("Please login to download your portfolio PDF.", "⚠️");
+        return;
+      }
+      await downloadAuthenticatedPDF(`/api/users/${activeUser.id}/dashboard/pdf`, `trainee_portfolio_${activeUser.id}.pdf`);
+    }
+
+    async function loadSessionPdfPreview(targetSessId) {
+      const sessId = targetSessId || (activeSessionReport ? (activeSessionReport.session_id || activeSessionReport.id) : (currentSession ? currentSession.id : null));
+      if (!sessId || !currentToken) return;
+
+      try {
+        const res = await fetch(`/api/reports/${sessId}/pdf`, {
+          method: "GET",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+        if (res.ok) {
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const frame = document.getElementById("pdfFrame");
+          if (frame) frame.src = blobUrl;
+        }
+      } catch (err) {
+        console.warn("Failed to load PDF preview:", err);
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* LONGITUDINAL ANALYTICS DASHBOARD (Section 19)        */
+    /* ---------------------------------------------------- */
+    async function loadLongitudinalAnalytics() {
+      if (!currentToken || !activeUser) return;
+
+      try {
+        const res = await fetch(`/api/users/${activeUser.id}/dashboard`, {
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const progress = data.progress || [];
+        document.getElementById("anTotalSessions").innerText = progress.length;
+
+        if (progress.length > 0) {
+          const avg = Math.round(progress.reduce((acc, p) => acc + p.accuracy, 0) / progress.length);
+          document.getElementById("anAvgAccuracy").innerText = `${avg}%`;
+
+          const trendStr = progress.slice(-4).map(p => `${p.accuracy}%`).join(" → ");
+          document.getElementById("anTrend").innerText = trendStr || "Baseline Established";
+        }
+
+        const cwa = data.cumulative_weak_areas || [];
+        const waBody = document.getElementById("anWeakAreasBody");
+        if (cwa.length === 0) {
+          waBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #34D399;">✓ No recurring weak areas recorded for this trainee.</td></tr>`;
+        } else {
+          waBody.innerHTML = cwa.map(w => `
+            <tr>
+              <td style="font-family: var(--font-mono); color: #38BDF8;">Step ${w.step_id}</td>
+              <td><strong>${w.step_name}</strong></td>
+              <td>${w.total_attempts}</td>
+              <td style="color: #F87171;">${w.total_mistakes}</td>
+              <td>${w.mistake_ratio}%</td>
+              <td><span class="step-badge" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24;">${w.severity}</span></td>
+            </tr>
+          `).join("");
+        }
+      } catch (err) {
+        console.warn("Error loading analytics:", err);
+      }
+    }
+
+    /* ---------------------------------------------------- */
+    /* DEV PRESET SCENARIOS (Section 22)                    */
+    /* ---------------------------------------------------- */
+    async function runScenarioCleanPass() {
+      if (!currentToken || !activeUser) await autoLoginDefaultUser();
+      document.getElementById("sc-pass-loader").style.display = "inline";
+      showToast("Simulating 16-step pristine pass run...", "⏳");
+
+      try {
+        const sessRes = await fetch("/api/sessions/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify({ user_id: activeUser.id, session_type: "TEST", session_number: Math.floor(Date.now() / 1000) % 10000 })
+        });
+        const sess = await sessRes.json();
+
+        const batch = [];
+        for (let i = 0; i < 16; i++) {
+          batch.push({
+            session_id: sess.id,
+            step_id: i,
+            attempts: 1,
+            mistakes: 0,
+            first_attempt_correct: true,
+            step_time_seconds: 7.2,
+            completed: true
+          });
+        }
+        await fetch("/api/step-performance/batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify(batch)
+        });
+
+        await fetch(`/api/sessions/${sess.id}/complete`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        const reportRes = await fetch(`/api/reports/${sess.id}/ai`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+        const report = await reportRes.json();
+        activeSessionReport = report;
+        currentSession = sess;
+
+        displayBackendAssessmentResults(report);
+        switchTab("tab-assessment");
+        showToast("TEST Pass verified: PASS (100%)", "🎯");
+      } catch (err) {
+        showToast(`Pass run error: ${err.message}`, "❌");
+      } finally {
+        document.getElementById("sc-pass-loader").style.display = "none";
+      }
+    }
+
+    async function runScenarioMistakeFail() {
+      if (!currentToken || !activeUser) await autoLoginDefaultUser();
+      document.getElementById("sc-fail-loader").style.display = "inline";
+      showToast("Simulating TEST failure run with mistake on Step 7...", "⏳");
+
+      try {
+        const sessRes = await fetch("/api/sessions/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify({ user_id: activeUser.id, session_type: "TEST", session_number: Math.floor(Date.now() / 1000) % 10000 })
+        });
+        const sess = await sessRes.json();
+
+        const batch = [];
+        for (let i = 0; i < 16; i++) {
+          const isErr = (i === 7);
+          batch.push({
+            session_id: sess.id,
+            step_id: i,
+            attempts: isErr ? 2 : 1,
+            mistakes: isErr ? 1 : 0,
+            first_attempt_correct: !isErr,
+            step_time_seconds: isErr ? 14.5 : 7.0,
+            completed: true
+          });
+        }
+        await fetch("/api/step-performance/batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify(batch)
+        });
+
+        await fetch("/api/mistakes/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify({
+            session_id: sess.id,
+            step_id: 7,
+            mistake_type: "WRONG_OBJECT",
+            attempt_number: 1
+          })
+        });
+
+        await fetch(`/api/sessions/${sess.id}/complete`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        const reportRes = await fetch(`/api/reports/${sess.id}/ai`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+        const report = await reportRes.json();
+        activeSessionReport = report;
+        currentSession = sess;
+
+        displayBackendAssessmentResults(report);
+        switchTab("tab-assessment");
+        showToast("TEST Fail verified: FAIL (Mistake on Step 7)", "❌");
+      } catch (err) {
+        showToast(`Fail run error: ${err.message}`, "❌");
+      } finally {
+        document.getElementById("sc-fail-loader").style.display = "none";
+      }
+    }
+
+    async function runScenarioPartial() {
+      if (!currentToken || !activeUser) await autoLoginDefaultUser();
+      document.getElementById("sc-part-loader").style.display = "inline";
+      showToast("Simulating incomplete partial procedure (2/16)...", "⏳");
+
+      try {
+        const sessRes = await fetch("/api/sessions/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify({ user_id: activeUser.id, session_type: "TEST", session_number: Math.floor(Date.now() / 1000) % 10000 })
+        });
+        const sess = await sessRes.json();
+
+        // Log only Step 0 and Step 1
+        for (let i = 0; i < 2; i++) {
+          await fetch("/api/step-performance/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+            body: JSON.stringify({
+              session_id: sess.id,
+              step_id: i,
+              attempts: 1,
+              mistakes: 0,
+              first_attempt_correct: true,
+              step_time_seconds: 6.5,
+              completed: true
+            })
+          });
+        }
+
+        await fetch(`/api/sessions/${sess.id}/complete`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        const reportRes = await fetch(`/api/reports/${sess.id}/ai`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+        const report = await reportRes.json();
+        activeSessionReport = report;
+        currentSession = sess;
+
+        displayBackendAssessmentResults(report);
+        switchTab("tab-assessment");
+        showToast("Partial session verified: 2/16 completed, FAIL (Incomplete)", "⏳");
+      } catch (err) {
+        showToast(`Partial run error: ${err.message}`, "❌");
+      } finally {
+        document.getElementById("sc-part-loader").style.display = "none";
+      }
+    }
+
+    async function runScenarioTraining() {
+      if (!currentToken || !activeUser) await autoLoginDefaultUser();
+      document.getElementById("sc-train-loader").style.display = "inline";
+      showToast("Simulating formative practice training run...", "⏳");
+
+      try {
+        const sessRes = await fetch("/api/sessions/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify({ user_id: activeUser.id, session_type: "TRAINING", session_number: Math.floor(Date.now() / 1000) % 10000 })
+        });
+        const sess = await sessRes.json();
+
+        const batch = [];
+        for (let i = 0; i < 8; i++) {
+          batch.push({
+            session_id: sess.id,
+            step_id: i,
+            attempts: 1,
+            mistakes: 0,
+            first_attempt_correct: true,
+            step_time_seconds: 8.0,
+            completed: true
+          });
+        }
+        await fetch("/api/step-performance/batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${currentToken}` },
+          body: JSON.stringify(batch)
+        });
+
+        await fetch(`/api/sessions/${sess.id}/complete`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+
+        const reportRes = await fetch(`/api/reports/${sess.id}/ai`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${currentToken}` }
+        });
+        const report = await reportRes.json();
+        activeSessionReport = report;
+        currentSession = sess;
+
+        displayBackendAssessmentResults(report);
+        switchTab("tab-assessment");
+        showToast("Training session evaluated: Formative status verified!", "🎓");
+      } catch (err) {
+        showToast(`Training run error: ${err.message}`, "❌");
+      } finally {
+        document.getElementById("sc-train-loader").style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SessionCreate(BaseModel):
@@ -21,5 +21,4 @@ class SessionResponse(BaseModel):
     total_time_seconds: Optional[float] = None
     status: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

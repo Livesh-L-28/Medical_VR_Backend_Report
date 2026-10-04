@@ -43,6 +43,8 @@ class DashboardTest(BaseModel):
 class DashboardProgress(BaseModel):
     session_id: int
     session_number: int
+    session_type: Optional[str] = None
+    result_or_status: Optional[str] = None
     accuracy: float
     total_mistakes: int
     total_attempts: int
